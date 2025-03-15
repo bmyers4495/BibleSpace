@@ -1,0 +1,74 @@
+
+  const bookAPI = `https://bolls.life/get-books/${version}/`
+
+  interface passageType{
+      verse: number,
+      text: string
+  }
+
+  const getBookID =async () =>{
+      try {
+          const response = await fetch(bookAPI);
+          if (!response){
+              throw new Error("Error fetching bookID")
+          }
+          else{
+              const bookData = await response.json();
+              const bookID = bookData.find((b: bookType) => b.name === book).bookid
+              return await bookID 
+          }
+      } catch (error) {
+          console.log(error)
+      }
+  }
+  const fetchPassage = async () => {
+      const bookID = await getBookID();
+      const fetchChapter = `https://bolls.life//${version}/${bookID}/${chapter}/`
+      const fetchVerses = `https://bolls.life/get-verses/`
+      try {
+          const response = await fetch(fetchVerses, {
+              method:'POST',
+              headers:{
+                  'Content-Type':'application/json'
+              },
+              body: JSON.stringify([
+                  {
+                      translation: version,
+                      book: bookID,
+                      chapter: chapter,
+                      verses :[14, 15, 16]
+                  }
+              ])
+          })
+          if (!response){
+              throw new Error("Error fetching passage")
+          } else{
+              data = await response.json()
+              console.log(data)
+              passage = data.map((p: passageType ) => {
+                  return{
+                      verse: p.verse,
+                      text: p.text
+                      .replace(/<S>\d+<\/S>/g, '')
+                      .replace(/<sup\s*[^>]*>.*?<\/sup>/g, '')
+                  }
+              }
+              )
+          }
+      } catch (error) {
+         console.log(error) 
+      }
+
+
+  }
+<div>
+  <SearchBar {data}/>
+    <ul>
+        {#each passage as verse}
+        <li>
+            <p><sup>{verse.verse}</sup> {verse.text}</p>
+        </li>
+        {/each}
+    </ul>
+
+</div>
