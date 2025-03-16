@@ -9,7 +9,6 @@
 <style>
 
   main > *{
-    margin:5rem 3rem;
     flex-wrap:wrap;
 
 

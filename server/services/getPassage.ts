@@ -1,65 +1,52 @@
-import axios from 'axios'
+import axios from "axios";
 
 type Reference = {
   version: string,
+  bookName: string,
   bookID: number,
   chapter: number,
-  verses: number[]
-}
+  verses: number[],
+};
 
-const getPassageService = async(bibleReference: Reference) =>{
-  console.log("Reference:", bibleReference.version)
+const getPassageService = async (bibleReference: Reference) => {
+  console.log("Reference:", bibleReference.version);
 
-  if (!bibleReference.verses){
-    bibleReference.verses = [1]
+  if (!bibleReference.verses) {
+    bibleReference.verses = [1];
   }
-      try{
-        const response = await axios.post(
-        'https://bolls.life/get-verses/',
-        [
-          {
-            translation: bibleReference.version,
-            book: bibleReference.bookID,
-            chapter: bibleReference.chapter,
-            verses: bibleReference.verses
-          }
-        ],
+  try {
+    const response = await axios.post(
+      "https://bolls.life/get-verses/",
+      [
         {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      return response.data;
-    } catch (err) {
-      throw new Error(`Error fetching data for Book: ${bibleReference.bookID}, Chapter: ${bibleReference.chapter} - ${err}`);
-    }
-  };
+          translation: bibleReference.version,
+          book: bibleReference.bookID,
+          chapter: bibleReference.chapter,
+          verses: bibleReference.verses,
+        },
+      ],
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
 
-  // try {
-    // const uniqueRequests = new Set<string>();
-    // // Create an array of promises for each combination of book and chapter
-    // const promises:Promise<any>[] = [];
-    // for (let i = 0; i < bibleReference.bookID.length; i++) {
-    //   for (let j = 0; j < chapter.length; j++) {
-    //     const requestKey = `${bibleReference.bookID[i]}-${chapter[j]}`; // Generate a unique key for each book/chapter pair
-    //     if(!uniqueRequests.has(requestKey)){
-    //       uniqueRequests.add(requestKey)
-    //       promises.push(fetchPassage(bibleReference.bookID[i], chapter[j])); // Call fetchPassage for each book/chapter
-    //     }
-    //   }
-    // }
-    //
-    // // Wait for all promises to resolve and return the results
-    // const passages = await Promise.all(promises);
-    // return passages;
-    
-//       } catch(err){
-//     throw new Error (`Error fetching date: ${err}`)
-//   }
-// }
+    const verseReference = await response.data.flat(2).map((d:any) => ({
+      version: d.translation,
+      bookID: d.book,
+      chapter: d.chapter,
+      verses: d.verse,
+      text: d.text,
+      bookName: bibleReference.bookName
+    }))
+    console.log(response.data)
+    return verseReference
+  } catch (err) {
+    throw new Error(
+      `Error fetching data for Book: ${bibleReference.bookID}, Chapter: ${bibleReference.chapter} - ${err}`,
+    );
+  }
+};
 
-
-export {
-  getPassageService
-}
+export { Reference, getPassageService };

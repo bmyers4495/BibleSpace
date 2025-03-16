@@ -12,20 +12,20 @@
 
 <div>
   <SearchBar />
-  
-  {#each passage as verse, i}
-    {#if i === 0 || (verse.bookName !== passage[i - 1].bookName || verse.chapter !== passage[i - 1].chapter)}
-        <h2>{verse.bookName} {verse.chapter}</h2>
-    {/if}
+  {#each passage as verse}
+    <h2 {verse.bookName} {verse.chapter}</h2>
     <p><sup>{verse.verse}</sup> {verse.text}</p>
 {/each}
+  
 </div>
 
 <style>
   div{
+    margin: 1rem 6rem;
     width: 100%;
   }
   p{
+    width:100%;
     text-align: left;
     padding: 0;
   }

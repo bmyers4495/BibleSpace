@@ -1,7 +1,7 @@
 import  parsePassage  from '../helpers/parsePassageHelper'
 import { Request, Response } from 'express';
 import  getBookIDs  from '../services/getBookIDService';  // Import the getBookIDs function
-import   {getPassageService} from '../services/getPassage';
+import   {getPassageService, Reference} from '../services/getPassage';
 
 const getPassageController = async (req: Request, res: Response): Promise<any>=> {
   try {
@@ -30,18 +30,12 @@ const getPassageController = async (req: Request, res: Response): Promise<any>=>
       return res.status(400).json({ error: 'No valid passages found' });
     }
 
-    // Extract book IDs, chapters, and verses
-    // const bookIDs = parsedPassages.map(p => p.bookID);
-    // const chapters = parsedPassages.map(p => p.chapter);
-    // const verses = parsedPassages.flatMap(p => p.verses);
-
-    // Fetch the verses from the service
-
-    const passageList:Promise<any>[]= []
+    const passageList:Reference[]= []
     for (const passage of parsedPassages) {
       const passageWithVersion = { ...passage, version: translation as string };
-      const passageData = await getPassageService(passageWithVersion);
-      passageList.push(passageData);
+      const passageDataArray = await getPassageService(passageWithVersion);
+      console.log(passageDataArray)
+      passageList.push(passageDataArray);
     }   
     
 
