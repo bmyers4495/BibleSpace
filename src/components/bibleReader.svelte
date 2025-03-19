@@ -11,7 +11,6 @@
 </script>
 
 <div>
-  <SearchBar />
   
   {#each passage as verse, i}
     {#if i === 0 || (verse.bookName !== passage[i - 1].bookName || verse.chapter !== passage[i - 1].chapter)}
@@ -23,10 +22,15 @@
 
 <style>
   div{
-    width: 100%;
+    max-height: 80vh;
+    min-height: 70vh;
+    overflow:scroll;
+    scroll-behavior:smooth;
+
   }
   p{
     text-align: left;
     padding: 0;
+    max-width:70vw;
   }
 </style>

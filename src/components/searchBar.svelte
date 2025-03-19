@@ -7,7 +7,7 @@
   const handleSumbit = async (e)=>{
     e.preventDefault()
     const urlEncodedQuey = queryStr.replace(' ', '%20')
-    const apiQuery= `http://localhost:4000/passages?translation=NKJV&passages=${urlEncodedQuey}` 
+    const apiQuery= `http://141.148.159.40:4000/passages?translation=NKJV&passages=${urlEncodedQuey}` 
     try{
       const response = await fetch(apiQuery, { method:"GET", headers:{'Content-Type': 'application/json'} })
       if (!response.ok){
@@ -42,10 +42,8 @@
 </div>
 
 <style>
-  form{
-  }
   input{
-    width: 100%;
+    min-width: 70vw;
   }
   
 </style>
