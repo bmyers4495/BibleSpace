@@ -1,48 +1,49 @@
 <script lang=ts>
-  import { onMount } from 'svelte';
-  import language from '../assets/languages.json'
-  let { selectedVersion, queryStr, handleSumbit } = $state()
+  import {verseStore} from '../store/bibleState.svelte.ts'
+  let  data = '';
+  let version = "NKJV"
+  let queryStr = ''
+
+  const handleSumbit = async (e)=>{
+    e.preventDefault()
+    const urlEncodedQuey = queryStr.replace(' ', '%20')
+    const apiQuery= `http://141.148.159.40:4000/passages?translation=NKJV&passages=${urlEncodedQuey}` 
+    try{
+      const response = await fetch(apiQuery, { method:"GET", headers:{'Content-Type': 'application/json'} })
+      if (!response.ok){
+        throw new Error(`Error fetching from ${apiQuery}`)
+      } else {
 
 
-interface VersionList {
-    language: string,
-    translations: {short_name: string, full_name: string, updated: number}  }
-
-
-  const fetchTranslations = ():VersionList[] => {
-    let englishLanguageList = []
-    const englishLanguage = language.find(l => l.language === 'English')
-    englishLanguageList.push(englishLanguage)
-    return englishLanguageList
+        data = await response.json()
+        console.log("data", data[2])
+        const verses = data.flat(2).map(verse =>({
+          bookID: verse.bookID,
+          chapter: verse.chapter,
+          text: verse.text,
+          translation: verse.version, 
+          verse:verse.verses,
+          bookName:verse.bookName
+        }));
+        verseStore.set(verses)
+      }
+    }catch(error){
+      console.log(error)
+    }
   }
-let versions: VersionList = $state() 
 
-  onMount(() =>{
-    versions = fetchTranslations().flatMap(b=> b.translations)
-  })
   
 
 </script>
 <div>
   <form onsubmit={handleSumbit}>
-    <select bind:value="{ selectedVersion }">
-      {#each versions as  translation}
-        <option value="{translation.short_name}" >{translation.short_name}</option>
-      {/each}
-    </select>
-    <input type="input" placeholder="Search Passage" bind:value={queryStr}/>
+    <input type="input" bind:value={queryStr}/>
   </form>
 </div>
 
 <style>
-  form{
-    min-width: 70vw;
-  }
   input{
-    width: 50vw;
-  }
-  select{
-    width: 20%;
+    min-width: 70vw;
   }
   
 </style>
