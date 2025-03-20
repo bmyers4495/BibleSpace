@@ -32,7 +32,7 @@ const getPassageController = async (req: Request, res: Response): Promise<any>=>
 
     const passageList:Reference[]= []
     for (const passage of parsedPassages) {
-      const passageWithVersion = { ...passage, version: translation as string };
+      const passageWithVersion = { ...passage, version: translation as string, bookFullName: passage.fullBookName};
       const passageDataArray = await getPassageService(passageWithVersion);
       console.log(passageDataArray)
       passageList.push(passageDataArray);

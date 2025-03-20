@@ -70,8 +70,9 @@ const bookAbbreviations: { [key: string]: string } = {
 
 const parsePassage = (input: string, books: any[]) => {
   // Updated regex to handle multi-word book names and multiple verse references
-  const passageRegex = /(\d*\s*[A-Za-z\s]+(?:\d*\s*[A-Za-z]+)?)\s*(\d+):([\d,\-\s]+)/g;
-  const passages: { bookName: string,  bookID: number; chapter: number; verses: number[] }[] = [];
+  const passageRegex = /(\d*\s*[A-Za-z\s]+(?:\d*\s*[A-Za-z]+)?)\s*(\d+):*([\d,\-\s]*)/g;
+  const passages: { fullBookName: string, bookName: string,  bookID: number; chapter: number; verses?: number[] }[] = [];
+  console.log(passages)
 
   // Split input by semicolons to separate each book's passages
   const passageGroups = input.split(';');
@@ -83,21 +84,22 @@ const parsePassage = (input: string, books: any[]) => {
       let bookName = match[1].trim();  // "Gen", "1 Cor", "Matt"
       const chapter = parseInt(match[2], 10);
       const verseString = match[3].replace(/\s+/g, ''); // Remove spaces
-      const verses: number[] = [];
+      const verses: number[]= [];
 
       // Process verses and ranges (e.g., "1,2,5-7")
-      verseString.split(',').forEach(part => {
-        if (part.includes('-')) {
-          // Handle range (e.g., "5-7" -> [5,6,7])
-          const [start, end] = part.split('-').map(n => parseInt(n, 10));
-          for (let i = start; i <= end; i++) {
-            verses.push(i);
+        verseString.split(',').forEach(part => {
+          if (part.includes('-')) {
+            // Handle range (e.g., "5-7" -> [5,6,7])
+            const [start, end] = part.split('-').map(n => parseInt(n, 10));
+            for (let i = start; i <= end; i++) {
+              verses.push(i);
+            }
+          } else {
+            // Single verse
+            verses.push(parseInt(part, 10));
           }
-        } else {
-          // Single verse
-          verses.push(parseInt(part, 10));
-        }
-      });
+        });
+      
 
       // Map book abbreviation to full name (if necessary)
       const fullBookName = bookAbbreviations[bookName.toLowerCase()] || bookName;
@@ -105,10 +107,12 @@ const parsePassage = (input: string, books: any[]) => {
       // Find the book ID using the full book name
       const book = books.find((book: any) => book.name.toLowerCase() === fullBookName.toLowerCase());
 
-      if (book) {
-        passages.push({bookName, bookID: book.bookid, chapter, verses});
-      } else {
+      if (book && verseString) {
+        passages.push({bookName, bookID: book.bookid, chapter, verses, fullBookName});
+      } else if ( !book){
         console.error(`Book not found: ${fullBookName}`);
+      } else{
+        passages.push({ bookName, bookID: book.bookid, chapter, fullBookName});
       }
     });
   });
