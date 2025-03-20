@@ -63,5 +63,4 @@ export const getPassageService = async (bibleReference: Reference) => {
       `Error fetching data for Book: ${bibleReference.bookID}, Chapter: ${bibleReference.chapter} - ${err}`,
     );
   }
-
 }

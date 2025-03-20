@@ -1,10 +1,8 @@
 <script lang="ts">
   import BibleReader from './components/bibleReader.svelte'
-  import SearchBar from './components/searchBar.svelte'
 </script>
 
 <main>
-  <SearchBar />
   <BibleReader />
 </main>
 
@@ -12,7 +10,5 @@
 
   main > *{
     flex-wrap:wrap;
-
-
   }
 </style>

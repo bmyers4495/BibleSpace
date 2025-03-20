@@ -1,4 +1,5 @@
 import { writable, readonly } from "svelte/store";
+
 type bibleReference = {
   book: number;
   chapter: number;
@@ -8,3 +9,12 @@ type bibleReference = {
 };
 export const verseStore = writable<bibleReference[]>([]);
 export const readVerseStore = readonly<bibleReference[]>(verseStore);
+
+
+export const addVerse = (verse: bibleReference) => {
+  verseStore.update((verses) => {
+    return [...verses, verse];
+  });
+};
+
+
