@@ -1,6 +1,6 @@
 # TODO
 
-- [] Add error handling
+- [x] Add error handling
 - [] Learn and add authentication
 - [] Design better UI/UX
     1. Decide on a name

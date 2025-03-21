@@ -1,49 +1,84 @@
 <script lang=ts>
-  import {verseStore} from '../store/bibleState.svelte.ts'
-  let  data = '';
-  let version = "NKJV"
-  let queryStr = ''
+  import {verseStore } from '../store/bibleState.svelte'
+  import type { bibleReference } from '../store/bibleState.svelte.ts'
+  import languages from '../assets/languages.json'
+//  import { onMount } from 'svelte';
+  
+  type translation = {
+    short_name: string,
+    full_name: string,
+    updated: number
+  }
+  type translationLang = {
+    language: string,
+    translations: translation[]
+  }
 
-  const handleSumbit = async (e)=>{
+
+  let  data: Array<bibleReference[]>| undefined=$state(undefined) 
+  let version = $state( "NKJV" ) 
+  let queryStr = $state("")
+  let err: string|undefined =$state(undefined)
+  const englishTranslations: translationLang[] = languages.filter((lang) => lang.language === "English")
+  
+  
+
+  const handleSumbit = async (e:Event)=>{
     e.preventDefault()
-    const urlEncodedQuey = queryStr.replace(' ', '%20')
-    const apiQuery= `http://141.148.159.40:4000/passages?translation=NKJV&passages=${urlEncodedQuey}` 
+    err = undefined
+    const urlEncodedQuery = queryStr.replace(' ', '%20')
+    const apiQuery= `http://biblespace.duckdns.org:4000/passages?translation=${version}&passages=${urlEncodedQuery}` 
     try{
       const response = await fetch(apiQuery, { method:"GET", headers:{'Content-Type': 'application/json'} })
       if (!response.ok){
         throw new Error(`Error fetching from ${apiQuery}`)
       } else {
-
-
+    
         data = await response.json()
-        console.log("data", data[2])
-        const verses = data.flat(2).map(verse =>({
-          bookID: verse.bookID,
-          chapter: verse.chapter,
-          text: verse.text,
-          translation: verse.version, 
-          verse:verse.verses,
-          bookName:verse.bookName
-        }));
-        verseStore.set(verses)
+        console.log("data", data)
+        if (data){
+          verseStore.set(data.flat(2))
+        }
       }
-    }catch(error){
-      console.log(error)
+    }catch(error:any){
+      const e:Error = error as Error
+      err = e.message
+      verseStore.set([])
+
     }
   }
+
 
   
 
 </script>
 <div>
   <form onsubmit={handleSumbit}>
+    <select name="version-dropbox" bind:value={version}>
+      {#each englishTranslations[0].translations as translation}
+        <option value={translation.short_name}>{translation.short_name}</option> 
+      {/each}
+    </select>
     <input type="input" bind:value={queryStr}/>
   </form>
 </div>
+  {#if err}
+    <p>{err}</p>
+  {/if}
 
 <style>
+  div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+  }
   input{
-    min-width: 70vw;
+    min-width: 60vw;
+  }
+  select{
+    min-width: 10vw;
+
   }
   
 </style>
