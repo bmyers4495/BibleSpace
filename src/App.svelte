@@ -1,11 +1,10 @@
 <script lang="ts">
-  import BibleReader from './components/bibleReader.svelte'
-  import SearchBar from './components/searchBar.svelte'
+  import BibleRoute from "./routes/bible_route.svelte";
+  import LoginRoute from "./routes/login.svelte";
 </script>
 
 <main>
-  <SearchBar />
-  <BibleReader />
+  <BibleRoute/>
 </main>
 
 <style>

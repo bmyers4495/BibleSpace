@@ -14,8 +14,6 @@ export const getPassageService = async (bibleReference: Reference) => {
   try{
   if (!bibleReference.verses){
     const uri = `https://bolls.life/get-text/${bibleReference.version}/${bibleReference.bookID}/${bibleReference.chapter}`
-    
-    console.log("uri: ", uri)
     response = await axios.get(
       uri
     ); 

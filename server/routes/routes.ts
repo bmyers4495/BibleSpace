@@ -4,5 +4,7 @@ const router = express.Router();
 
 // Define the route for fetching passages
 router.get('/passages', getPassageController);
+// router.post('/login', authController.login);
+// router.post('/register', authController.register);
 
 export default router;
